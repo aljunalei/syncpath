@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
-import { getNotionTasks } from '@/lib/notion';
+import { getTasksParsed } from '@/lib/notion';
 
 export async function GET() {
   try {
-    const tasks = await getNotionTasks();
-    return NextResponse.json(tasks);
+    const tasks = await getTasksParsed();
+    return NextResponse.json({ success: true, tasks });
   } catch (error) {
     console.error('Error fetching tasks:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch tasks' },
+       { success: false, error: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
