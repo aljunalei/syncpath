@@ -29,7 +29,7 @@ export function parseNotionTask(notionTask: any): Task {
   return {
     id: notionTask.id,
     title: props.Task?.title?.[0]?.plain_text || 'Untitled',
-    status: props.Status?.select?.name || 'To Do',
+    status: props.Status?.status?.name || 'To Do',
     priority: props.Priority?.select?.name || 'Medium',
     assignee: props.Assignee?.people?.[0]?.name || 'Unassigned',
     deadline: props.Deadline?.date?.start || null,
