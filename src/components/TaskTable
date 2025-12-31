@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Task } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton.tsx';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
