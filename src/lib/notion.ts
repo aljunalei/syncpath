@@ -7,7 +7,7 @@ export const notion = new Client({
 
 export const databaseId = process.env.NOTION_DATABASE_ID!;
 
-export async function getTasks() {
+export async function getNotionTasks() {
   try {
     const response = await notion.dataSources.query({
       data_source_id: databaseId,
@@ -39,6 +39,6 @@ export function parseNotionTask(notionTask: any): Task {
 }
 
 export async function getTasksParsed(): Promise<Task[]> {
-  const rawTasks = await getTasks();
+  const rawTasks = await getNotionTasks();
   return rawTasks.map(task => parseNotionTask(task));
 }
