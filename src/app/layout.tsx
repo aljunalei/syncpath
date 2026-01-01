@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 title: "SyncPath",
   description: "Manage tasks, track progress, and collaborate effectively",
   icons: {
-    icon: "/favicon.ico",
+    icon: "src/app/assets/favicon.ico",
   },
 };
 
