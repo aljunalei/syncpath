@@ -1,4 +1,3 @@
-```markdown
 # SyncPath - Project Management Dashboard
 
 A modern task management system with intelligent automation. Built with Next.js, Notion API, and n8n workflow automation.
