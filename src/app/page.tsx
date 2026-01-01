@@ -12,13 +12,13 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // Filter states
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
@@ -43,28 +43,23 @@ export default function Home() {
     fetchTasks();
   }, []);
 
-  // Apply filters and sorting
   useEffect(() => {
     let result = [...tasks];
 
-    // Search filter
     if (searchQuery) {
       result = result.filter(task =>
         task.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    // Status filter
     if (statusFilter !== 'all') {
       result = result.filter(task => task.status === statusFilter);
     }
 
-    // Priority filter
     if (priorityFilter !== 'all') {
       result = result.filter(task => task.priority === priorityFilter);
     }
 
-    // Sorting
     result.sort((a, b) => {
       switch (sortBy) {
         case 'deadline':
@@ -91,6 +86,16 @@ export default function Home() {
     setFilteredTasks(result);
   }, [tasks, searchQuery, statusFilter, priorityFilter, sortBy]);
 
+  // Calculate stats
+  const stats = {
+    total: tasks.length,
+    done: tasks.filter(t => t.status === 'Done').length,
+    inProgress: tasks.filter(t => t.status === 'In Progress').length,
+    blocked: tasks.filter(t => t.status === 'Blocked').length,
+    overdue: tasks.filter(t => t.deadline && new Date(t.deadline) < new Date() && t.status !== 'Done').length,
+    highPriority: tasks.filter(t => (t.priority === 'Urgent' || t.priority === 'High') && t.status !== 'Done').length,
+  };
+
   const clearFilters = () => {
     setSearchQuery('');
     setStatusFilter('all');
@@ -100,94 +105,161 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Loading tasks...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading tasks...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-8">SyncPath - Project Management Dashboard</h1>
-
-      {/* Filters and Controls */}
-      <div className="bg-white p-4 rounded-lg shadow mb-6 space-y-4">
-        {/* Search Bar */}
-        <div>
-          <Input
-            placeholder="Search tasks..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="max-w-md"
-          />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="container mx-auto p-6 md:p-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+            SyncPath
+          </h1>
+          <p className="text-gray-600">Project Management Dashboard</p>
         </div>
 
-        {/* Filters Row */}
-        <div className="flex flex-wrap gap-4 items-center">
-          {/* Status Filter */}
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium">Status:</label>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="To Do">To Do</SelectItem>
-                <SelectItem value="In Progress">In Progress</SelectItem>
-                <SelectItem value="Done">Done</SelectItem>
-                <SelectItem value="Blocked">Blocked</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+          <Card className="border-l-4 border-l-blue-500">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Total Tasks</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-gray-900">{stats.total}</div>
+            </CardContent>
+          </Card>
 
-          {/* Priority Filter */}
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium">Priority:</label>
-            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-              <SelectTrigger className="w-[120px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="Urgent">Urgent</SelectItem>
-                <SelectItem value="High">High</SelectItem>
-                <SelectItem value="Medium">Medium</SelectItem>
-                <SelectItem value="Low">Low</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Card className="border-l-4 border-l-green-500">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Completed</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-green-600">{stats.done}</div>
+            </CardContent>
+          </Card>
 
-          {/* Sort By */}
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium">Sort by:</label>
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="deadline">Deadline</SelectItem>
-                <SelectItem value="priority">Priority</SelectItem>
-                <SelectItem value="status">Status</SelectItem>
-                <SelectItem value="assignee">Assignee</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Card className="border-l-4 border-l-blue-400">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">In Progress</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-blue-600">{stats.inProgress}</div>
+            </CardContent>
+          </Card>
 
-          {/* Clear Filters */}
-          <Button variant="outline" onClick={clearFilters}>
-            Clear Filters
-          </Button>
+          <Card className="border-l-4 border-l-red-500">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Blocked</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-red-600">{stats.blocked}</div>
+            </CardContent>
+          </Card>
 
-          {/* Task Count */}
-          <div className="ml-auto text-sm text-gray-600">
-            Showing {filteredTasks.length} of {tasks.length} tasks
-          </div>
+          <Card className="border-l-4 border-l-orange-500">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Overdue</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-orange-600">{stats.overdue}</div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-purple-500">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">High Priority</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-purple-600">{stats.highPriority}</div>
+            </CardContent>
+          </Card>
         </div>
+
+        {/* Filters */}
+        <Card className="mb-6 shadow-md">
+          <CardContent className="pt-6">
+            <div className="space-y-4">
+              <Input
+                placeholder="🔍 Search tasks..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="max-w-md"
+              />
+
+              <div className="flex flex-wrap gap-4 items-center">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-medium text-gray-700">Status:</label>
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All</SelectItem>
+                      <SelectItem value="To Do">To Do</SelectItem>
+                      <SelectItem value="In Progress">In Progress</SelectItem>
+                      <SelectItem value="Done">Done</SelectItem>
+                      <SelectItem value="Blocked">Blocked</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-medium text-gray-700">Priority:</label>
+                  <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All</SelectItem>
+                      <SelectItem value="Urgent">Urgent</SelectItem>
+                      <SelectItem value="High">High</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="Low">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-medium text-gray-700">Sort by:</label>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="deadline">Deadline</SelectItem>
+                      <SelectItem value="priority">Priority</SelectItem>
+                      <SelectItem value="status">Status</SelectItem>
+                      <SelectItem value="assignee">Assignee</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <Button variant="outline" onClick={clearFilters}>
+                  Clear Filters
+                </Button>
+
+                <div className="ml-auto text-sm text-gray-600 font-medium">
+                  Showing {filteredTasks.length} of {stats.total} tasks
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Task Table */}
+        <Card className="shadow-lg">
+          <CardContent className="p-0">
+            <TaskTable tasks={filteredTasks} onUpdate={fetchTasks} />
+          </CardContent>
+        </Card>
       </div>
-
-      {/* Task Table */}
-      <TaskTable tasks={filteredTasks} onUpdate={fetchTasks} />
     </div>
   );
 }
