@@ -1,4 +1,4 @@
-// Clean task interface for our dashboard
+// src/lib/types.ts
 export interface Task {
   id: string;
   title: string;

@@ -1,16 +1,16 @@
+// src/app/api/tasks/[id]/route.ts
 import { NextResponse } from 'next/server';
 import { Client } from '@notionhq/client';
 
-const notion = new Client({ auth: process.env.NOTION_TOKEN });
+const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { status, priority } = await request.json();
-    const pageId = params.id;
-
+    const pageId = (await params).id;
     const updates: any = { properties: {} };
 
     if (status) {
@@ -25,7 +25,6 @@ export async function PATCH(
       ...updates,
     });
 
-    // 🔥 WEBHOOK TRIGGER - Check this is here!
     if (status === 'Done' && process.env.N8N_WEBHOOK_URL) {
       try {
         const taskResponse = await notion.pages.retrieve({ page_id: pageId });
@@ -38,18 +37,20 @@ export async function PATCH(
             event: 'task_completed',
             task: {
               id: pageId,
-              title: props.Name?.title?.[0]?.plain_text || 'Untitled',
+              title: props.Task?.title?.[0]?.plain_text || 'Untitled',
               priority: props.Priority?.select?.name || 'Medium',
               assignee: props.Assignee?.people?.[0]?.name || 'Unassigned',
+              deadline: props.Deadline?.date?.start || null,
+              tags: props.Tags?.multi_select?.map((tag: any) => tag.name) || [],
+              aiSuggested: props['AI Suggested']?.checkbox || false,
               completedAt: new Date().toISOString(),
             },
           }),
         });
         
-        console.log('✅ Webhook sent to n8n successfully');
+        console.log(' Webhook sent to n8n successfully');
       } catch (webhookError) {
-        console.error('⚠️ Webhook failed (task still updated):', webhookError);
-        // Don't fail the whole request if webhook fails
+        console.error(' Webhook failed (task still updated):', webhookError);
       }
     }
 
