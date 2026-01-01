@@ -35,7 +35,6 @@ export function parseNotionTask(notionTask: any): Task {
     assignee: props.Assignee?.people?.[0]?.name || 'Unassigned',
     deadline: props.Deadline?.date?.start || null,
     tags: props.Tags?.multi_select?.map((tag: any) => tag.name) || [],
-    aiSuggested: props['AI Suggested']?.checkbox || false,
   };
 }
 

@@ -7,5 +7,4 @@ export interface Task {
   assignee: string;
   deadline: string | null;
   tags: string[];
-  aiSuggested: boolean;
 }
