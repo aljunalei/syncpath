@@ -118,12 +118,23 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="container mx-auto p-6 md:p-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
-            SyncPath
-          </h1>
-          <p className="text-gray-600">Project Management Dashboard</p>
-        </div>
+        {/* Header */}
+<div className="mb-8 flex items-center gap-4">
+  {/* Simple SVG Logo */}
+  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg">
+    <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+    </svg>
+  </div>
+  
+  <div>
+    <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+      SyncPath
+    </h1>
+    <p className="text-gray-600 text-sm">Project Management Dashboard</p>
+  </div>
+</div>
+
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
@@ -187,7 +198,7 @@ export default function Home() {
           <CardContent className="pt-6">
             <div className="space-y-4">
               <Input
-                placeholder="🔍 Search tasks..."
+                placeholder="Search tasks..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="max-w-md"
