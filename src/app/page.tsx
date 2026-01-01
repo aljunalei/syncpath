@@ -108,7 +108,7 @@ export default function Home() {
 
   return (
     <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-8">Task Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-8">SyncPath - Project Management Dashboard</h1>
 
       {/* Filters and Controls */}
       <div className="bg-white p-4 rounded-lg shadow mb-6 space-y-4">
