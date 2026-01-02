@@ -24,9 +24,13 @@ export default function Home() {
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('deadline');
 
+  const [autoRefresh, setAutoRefresh] = useState(true);
+
   const fetchTasks = async () => {
     try {
-      const response = await fetch('/api/tasks');
+      const response = await fetch('/api/tasks', {
+        cache: 'no-store', // Prevent caching for fresh data
+      });
       const data = await response.json();
       if (data.success) {
         setTasks(data.tasks);
@@ -42,6 +46,16 @@ export default function Home() {
   useEffect(() => {
     fetchTasks();
   }, []);
+
+  useEffect(() => {
+  if (!autoRefresh) return;
+
+  const interval = setInterval(() => {
+    fetchTasks();
+  }, 10000);
+
+  return () => clearInterval(interval);
+}, [autoRefresh]);
 
   useEffect(() => {
     let result = [...tasks];
@@ -117,21 +131,34 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="container mx-auto p-6 md:p-8">
-
-        {/* Header */}
-<div className="mb-8 flex items-center gap-4">
-  {/* Simple SVG Logo */}
-  <img 
-    src="/logo.png"
-    alt="SyncPath Logo" 
-    className="w-12 h-12 rounded-xl shadow-lg"
-  />
-  <div>
-    <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-      SyncPath
-    </h1>
-    <p className="text-gray-600 text-sm">Project Management Dashboard</p>
+{/* Header */}
+<div className="mb-8 flex items-center justify-between">
+  <div className="flex items-center gap-4">
+    <img 
+      src="/logo.png"
+      alt="SyncPath Logo" 
+      className="w-12 h-12 rounded-xl shadow-lg"
+    />
+    <div>
+      <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+        SyncPath
+      </h1>
+      <p className="text-gray-600 text-sm">Project Management Dashboard</p>
+    </div>
   </div>
+
+  {/* Simple Refresh Button */}
+  <Button 
+    onClick={fetchTasks} 
+    variant="outline" 
+    size="sm"
+    className="flex items-center gap-2"
+  >
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+    </svg>
+    Refresh
+  </Button>
 </div>
 
 

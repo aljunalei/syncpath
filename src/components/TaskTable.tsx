@@ -67,9 +67,9 @@ export default function TaskTable({ tasks, onUpdate }: TaskTableProps) {
   const getPriorityBadge = (priority: string) => {
     const styles = {
       'Urgent': 'bg-red-500 text-white hover:bg-red-500',
-      'High': 'bg-orange-500 text-white hover:bg-orange-500',
+      'High': 'bg-violet-500 text-white hover:bg-violet-500',
       'Medium': 'bg-yellow-400 text-gray-900 hover:bg-yellow-400',
-      'Low': 'bg-green-500 text-white hover:bg-green-500',
+      'Low': 'bg-gray-500 text-white hover:bg-gray-500',
     };
     
     return (
